@@ -135,6 +135,34 @@ p {
     color: var(--accent-color);
 }
 
+.language-toggle {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: 1rem;
+}
+
+.lang-btn {
+    background: none;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.lang-btn:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.lang-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
 .nav-toggle {
     display: none;
     font-size: 1.5rem;
@@ -1248,6 +1276,12 @@ footer small {
     
     .nav-toggle {
         display: block;
+    }
+    
+    .language-toggle {
+        margin-left: 0;
+        margin-top: 1rem;
+        justify-content: center;
     }
     
     h1 {

@@ -215,3 +215,124 @@ const debouncedScroll = debounce(function() {
 }, 10);
 
 window.addEventListener('scroll', debouncedScroll);
+
+// Language switching functionality
+let currentLanguage = 'en';
+
+function switchLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Update language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`lang-${lang}`).classList.add('active');
+    
+    // Update all elements with data attributes
+    document.querySelectorAll('[data-en][data-nl]').forEach(element => {
+        if (element.hasAttribute(`data-${lang}`)) {
+            element.textContent = element.getAttribute(`data-${lang}`);
+        }
+    });
+    
+    // Update document language
+    document.documentElement.lang = lang;
+    
+    // Update meta tags for SEO
+    updateMetaTags(lang);
+    
+    // Save language preference
+    localStorage.setItem('preferredLanguage', lang);
+    
+    // Update social sharing buttons
+    updateSocialSharing(lang);
+}
+
+function updateMetaTags(lang) {
+    const titles = {
+        'en': "Charlie Munger's Mental Models Framework - The Latticework of Worldly Wisdom",
+        'nl': "Charlie Munger's Mentale Modellen Raamwerk - Het Raamwerk van Wereldse Wijsheid"
+    };
+    
+    const descriptions = {
+        'en': "Comprehensive analysis of Charlie Munger's 25 psychological tendencies and 80+ mental models. Learn the latticework approach to decision-making used by Berkshire Hathaway.",
+        'nl': "Uitgebreide analyse van Charlie Munger's 25 psychologische neigingen en 80+ mentale modellen. Leer de raamwerk benadering voor besluitvorming gebruikt door Berkshire Hathaway."
+    };
+    
+    // Update title
+    document.title = titles[lang];
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+        metaDescription.setAttribute('content', descriptions[lang]);
+    }
+    
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+        ogTitle.setAttribute('content', titles[lang]);
+    }
+    
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+        ogDescription.setAttribute('content', descriptions[lang]);
+    }
+    
+    // Update Twitter tags
+    const twitterTitle = document.querySelector('meta[property="twitter:title"]');
+    if (twitterTitle) {
+        twitterTitle.setAttribute('content', titles[lang]);
+    }
+    
+    const twitterDescription = document.querySelector('meta[property="twitter:description"]');
+    if (twitterDescription) {
+        twitterDescription.setAttribute('content', descriptions[lang]);
+    }
+}
+
+function updateSocialSharing(lang) {
+    const shareTexts = {
+        'en': {
+            twitter: "Charlie Munger's Mental Models Framework - The Latticework of Worldly Wisdom",
+            email: "Charlie Munger's Mental Models Framework",
+            emailBody: "Check out this comprehensive analysis of Charlie Munger's mental models: https://mahavak.github.io/models/"
+        },
+        'nl': {
+            twitter: "Charlie Munger's Mentale Modellen Raamwerk - Het Raamwerk van Wereldse Wijsheid", 
+            email: "Charlie Munger's Mentale Modellen Raamwerk",
+            emailBody: "Bekijk deze uitgebreide analyse van Charlie Munger's mentale modellen: https://mahavak.github.io/models/"
+        }
+    };
+    
+    // Update Twitter share link
+    const twitterBtn = document.querySelector('.social-btn.twitter');
+    if (twitterBtn) {
+        const newUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTexts[lang].twitter)}&url=https://mahavak.github.io/models/`;
+        twitterBtn.setAttribute('href', newUrl);
+    }
+    
+    // Update email share link
+    const emailBtn = document.querySelector('.social-btn.email');
+    if (emailBtn) {
+        const newUrl = `mailto:?subject=${encodeURIComponent(shareTexts[lang].email)}&body=${encodeURIComponent(shareTexts[lang].emailBody)}`;
+        emailBtn.setAttribute('href', newUrl);
+    }
+}
+
+// Initialize language on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Check for saved language preference
+    const savedLanguage = localStorage.getItem('preferredLanguage');
+    if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'nl')) {
+        switchLanguage(savedLanguage);
+    } else {
+        // Detect browser language
+        const browserLang = navigator.language || navigator.userLanguage;
+        if (browserLang.startsWith('nl')) {
+            switchLanguage('nl');
+        } else {
+            switchLanguage('en');
+        }
+    }
+});
