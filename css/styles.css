@@ -690,92 +690,13 @@ blockquote {
     opacity: 0.9;
 }
 
-/* Social Sharing */
-.social-sharing {
-    background-color: var(--bg-light);
-    padding: 3rem 0;
-    text-align: center;
-    margin-top: 4rem;
-}
-
-.social-sharing h3 {
-    color: var(--primary-color);
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
-}
-
-.social-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.social-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.8rem 1.5rem;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    color: white;
-    min-width: 140px;
-    justify-content: center;
-}
-
-.social-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.social-btn.twitter {
-    background-color: #1da1f2;
-}
-
-.social-btn.twitter:hover {
-    background-color: #0d8bd9;
-}
-
-.social-btn.linkedin {
-    background-color: #0077b5;
-}
-
-.social-btn.linkedin:hover {
-    background-color: #005885;
-}
-
-.social-btn.facebook {
-    background-color: #4267b2;
-}
-
-.social-btn.facebook:hover {
-    background-color: #365899;
-}
-
-.social-btn.email {
-    background-color: var(--accent-color);
-}
-
-.social-btn.email:hover {
-    background-color: #e65100;
-}
-
 /* Footer */
 footer {
     background-color: var(--text-dark);
     color: white;
     padding: 2rem 0;
     text-align: center;
-}
-
-footer p {
-    margin-bottom: 0.5rem;
-}
-
-footer small {
-    opacity: 0.7;
+    margin-top: 4rem;
 }
 
 /* Animations */
@@ -1329,15 +1250,5 @@ footer small {
     .cta-button {
         padding: 1rem 2rem;
         font-size: 1rem;
-    }
-    
-    .social-buttons {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.8rem;
-    }
-    
-    .social-btn {
-        min-width: 200px;
     }
 }
