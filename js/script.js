@@ -733,6 +733,108 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// Blog API Configuration
+const BLOG_API_URL = '/blog-backend/api'; // Update this to your backend URL
+
+// Load blog posts from database
+async function loadBlogPosts() {
+    try {
+        const response = await fetch(`${BLOG_API_URL}/posts.php?status=published&limit=3`);
+        const data = await response.json();
+        
+        if (data.success && data.data.length > 0) {
+            displayBlogPosts(data.data);
+        } else {
+            console.warn('No blog posts found, showing static content');
+        }
+    } catch (error) {
+        console.warn('Failed to load blog posts from database, showing static content:', error);
+    }
+}
+
+function displayBlogPosts(posts) {
+    const blogGrid = document.querySelector('.blog-grid');
+    if (!blogGrid) return;
+    
+    const lang = currentLanguage || 'en';
+    
+    blogGrid.innerHTML = posts.map(post => {
+        const title = lang === 'nl' && post.title_nl ? post.title_nl : post.title;
+        const excerpt = lang === 'nl' && post.excerpt_nl ? post.excerpt_nl : post.excerpt;
+        const readMore = lang === 'nl' ? 'Lees Meer →' : 'Read More →';
+        const byText = lang === 'nl' ? 'Door' : 'By';
+        const date = new Date(post.published_at || post.created_at).toLocaleDateString(
+            lang === 'nl' ? 'nl-NL' : 'en-US', 
+            { year: 'numeric', month: 'long', day: 'numeric' }
+        );
+        
+        return `
+            <article class="blog-card">
+                <div class="blog-date">${date}</div>
+                <h3>${title}</h3>
+                <p>${excerpt}</p>
+                <div class="blog-meta">
+                    <span class="blog-author">${byText} ${post.author}</span>
+                    <span class="blog-category">${post.category}</span>
+                </div>
+                <a href="#blog-post-${post.slug}" class="blog-read-more" onclick="loadFullPost('${post.slug}')">${readMore}</a>
+            </article>
+        `;
+    }).join('');
+}
+
+async function loadFullPost(slug) {
+    try {
+        const response = await fetch(`${BLOG_API_URL}/posts.php?slug=${slug}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayFullPost(data.data);
+        }
+    } catch (error) {
+        console.error('Failed to load full post:', error);
+    }
+}
+
+function displayFullPost(post) {
+    const lang = currentLanguage || 'en';
+    const title = lang === 'nl' && post.title_nl ? post.title_nl : post.title;
+    const content = lang === 'nl' && post.content_nl ? post.content_nl : post.content;
+    const byText = lang === 'nl' ? 'Door' : 'By';
+    const date = new Date(post.published_at || post.created_at).toLocaleDateString(
+        lang === 'nl' ? 'nl-NL' : 'en-US', 
+        { year: 'numeric', month: 'long', day: 'numeric' }
+    );
+    
+    // Create modal or new page to display full post
+    const modal = document.createElement('div');
+    modal.className = 'blog-post-modal';
+    modal.innerHTML = `
+        <div class="blog-post-content">
+            <button class="close-modal" onclick="this.parentElement.parentElement.remove()">×</button>
+            <article>
+                <header>
+                    <h1>${title}</h1>
+                    <div class="post-meta">
+                        <span>${byText} ${post.author}</span>
+                        <span>${date}</span>
+                        <span>${post.category}</span>
+                    </div>
+                </header>
+                <div class="post-body">${content}</div>
+            </article>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// Initialize blog posts loading
+document.addEventListener('DOMContentLoaded', function() {
+    // Load blog posts after other initializations
+    setTimeout(loadBlogPosts, 1000);
+});
+
 // Update language switching to handle select options
 function switchLanguage(lang) {
     currentLanguage = lang;
