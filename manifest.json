@@ -1,0 +1,56 @@
+{
+  "name": "Charlie Munger's Mental Models Framework",
+  "short_name": "Mental Models",
+  "description": "Comprehensive analysis of Charlie Munger's 25 psychological tendencies and 80+ mental models",
+  "start_url": "/models/",
+  "display": "standalone",
+  "background_color": "#1a237e",
+  "theme_color": "#1a237e",
+  "orientation": "portrait-primary",
+  "categories": ["education", "business", "productivity"],
+  "icons": [
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/screenshot-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Mental Models Framework Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Psychology",
+      "short_name": "Psychology",
+      "description": "25 Psychological Tendencies",
+      "url": "/models/#psychology",
+      "icons": [{ "src": "images/brain-network.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Pillars",
+      "short_name": "Pillars",
+      "description": "Foundational Pillars",
+      "url": "/models/#pillars",
+      "icons": [{ "src": "images/interconnected-nodes.svg", "sizes": "96x96" }]
+    }
+  ],
+  "lang": "en",
+  "dir": "ltr"
+}
