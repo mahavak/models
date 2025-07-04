@@ -249,50 +249,6 @@ window.addEventListener('scroll', debouncedScroll);
 // Language switching functionality
 let currentLanguage = 'en';
 
-function switchLanguage(lang) {
-    currentLanguage = lang;
-    
-    // Update language buttons
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.getElementById(`lang-${lang}`).classList.add('active');
-    
-    // Update all elements with data attributes
-    document.querySelectorAll('[data-en][data-nl]').forEach(element => {
-        if (element.hasAttribute(`data-${lang}`)) {
-            element.textContent = element.getAttribute(`data-${lang}`);
-        }
-    });
-    
-    // Update aria-labels
-    document.querySelectorAll('[data-en-label][data-nl-label]').forEach(element => {
-        if (element.hasAttribute(`data-${lang}-label`)) {
-            element.setAttribute('aria-label', element.getAttribute(`data-${lang}-label`));
-        }
-    });
-    
-    // Update document language
-    document.documentElement.lang = lang;
-    
-    // Update meta tags for SEO
-    updateMetaTags(lang);
-    
-    // Save language preference
-    localStorage.setItem('preferredLanguage', lang);
-    
-    // Update social sharing buttons
-    updateSocialSharing(lang);
-    
-    // Track language change in Google Analytics
-    if (window.gtag) {
-        gtag('event', 'language_change', {
-            event_category: 'UI',
-            event_label: lang,
-            custom_language: lang
-        });
-    }
-}
 
 function updateMetaTags(lang) {
     const titles = {
@@ -693,3 +649,136 @@ window.addEventListener('offline', updateOnlineStatus);
 
 // Check initial status
 document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+
+// Contact Form Handling
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contact-form');
+    const formStatus = document.getElementById('form-status');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value,
+                newsletter: document.getElementById('newsletter').checked
+            };
+
+            // Basic validation
+            if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+                showFormStatus('error', currentLanguage === 'nl' ? 'Vul alle verplichte velden in.' : 'Please fill in all required fields.');
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                showFormStatus('error', currentLanguage === 'nl' ? 'Voer een geldig e-mailadres in.' : 'Please enter a valid email address.');
+                return;
+            }
+
+            // Show loading state
+            const submitButton = contactForm.querySelector('.submit-button');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = currentLanguage === 'nl' ? 'Verzenden...' : 'Sending...';
+
+            // Simulate form submission (will be replaced with actual backend call)
+            try {
+                // For now, just simulate a successful submission
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                showFormStatus('success', currentLanguage === 'nl' ? 
+                    'Bedankt voor je bericht! We nemen binnen 24 uur contact met je op.' : 
+                    'Thank you for your message! We\'ll get back to you within 24 hours.');
+                
+                // Reset form
+                contactForm.reset();
+                
+                // Track form submission in Google Analytics
+                if (window.gtag) {
+                    gtag('event', 'contact_form_submit', {
+                        event_category: 'Engagement',
+                        event_label: formData.subject,
+                        value: 1
+                    });
+                }
+            } catch (error) {
+                showFormStatus('error', currentLanguage === 'nl' ? 
+                    'Er is iets misgegaan. Probeer het later opnieuw.' : 
+                    'Something went wrong. Please try again later.');
+            } finally {
+                // Restore button
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+            }
+        });
+    }
+
+    function showFormStatus(type, message) {
+        formStatus.className = `form-status ${type}`;
+        formStatus.textContent = message;
+        
+        // Auto-hide success messages after 5 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                formStatus.textContent = '';
+                formStatus.className = 'form-status';
+            }, 5000);
+        }
+    }
+});
+
+// Update language switching to handle select options
+function switchLanguage(lang) {
+    currentLanguage = lang;
+    
+    // Update language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.getElementById(`lang-${lang}`).classList.add('active');
+    
+    // Update all elements with data attributes
+    document.querySelectorAll('[data-en][data-nl]').forEach(element => {
+        if (element.hasAttribute(`data-${lang}`)) {
+            if (element.tagName === 'OPTION') {
+                element.text = element.getAttribute(`data-${lang}`);
+            } else {
+                element.textContent = element.getAttribute(`data-${lang}`);
+            }
+        }
+    });
+    
+    // Update aria-labels
+    document.querySelectorAll('[data-en-label][data-nl-label]').forEach(element => {
+        if (element.hasAttribute(`data-${lang}-label`)) {
+            element.setAttribute('aria-label', element.getAttribute(`data-${lang}-label`));
+        }
+    });
+    
+    // Update document language
+    document.documentElement.lang = lang;
+    
+    // Update meta tags for SEO
+    updateMetaTags(lang);
+    
+    // Save language preference
+    localStorage.setItem('preferredLanguage', lang);
+    
+    // Update social sharing buttons
+    updateSocialSharing(lang);
+    
+    // Track language change in Google Analytics
+    if (window.gtag) {
+        gtag('event', 'language_change', {
+            event_category: 'UI',
+            event_label: lang,
+            custom_language: lang
+        });
+    }
+}
