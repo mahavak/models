@@ -246,6 +246,15 @@ function switchLanguage(lang) {
     
     // Update social sharing buttons
     updateSocialSharing(lang);
+    
+    // Track language change in Google Analytics
+    if (window.gtag) {
+        gtag('event', 'language_change', {
+            event_category: 'UI',
+            event_label: lang,
+            custom_language: lang
+        });
+    }
 }
 
 function updateMetaTags(lang) {
@@ -349,6 +358,15 @@ function toggleTheme() {
     // Update theme color meta tag
     const themeColor = newTheme === 'dark' ? '#121212' : '#1a237e';
     document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+    
+    // Track theme change in Google Analytics
+    if (window.gtag) {
+        gtag('event', 'theme_change', {
+            event_category: 'UI',
+            event_label: newTheme,
+            value: newTheme === 'dark' ? 1 : 0
+        });
+    }
 }
 
 // Initialize theme on page load
@@ -430,6 +448,15 @@ function performSearch() {
     });
     
     displaySearchResults(results, query);
+    
+    // Track search in Google Analytics
+    if (window.gtag && query.length > 2) {
+        gtag('event', 'search', {
+            search_term: query,
+            event_category: 'Engagement',
+            value: results.length
+        });
+    }
 }
 
 function displaySearchResults(results, query) {
