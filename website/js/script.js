@@ -336,3 +336,269 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// Dark mode functionality
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Update theme color meta tag
+    const themeColor = newTheme === 'dark' ? '#121212' : '#1a237e';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+}
+
+// Initialize theme on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (prefersDarkScheme.matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    
+    // Update theme color based on current theme
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const themeColor = currentTheme === 'dark' ? '#121212' : '#1a237e';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+    
+    // Listen for system theme changes
+    prefersDarkScheme.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) {
+            const newTheme = e.matches ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+    });
+});
+
+// Search functionality
+const searchData = [
+    // Mental Models
+    { title: "Margin of Safety", content: "Reminds us that plans can fail and we need buffers", section: "philosophy", tags: ["safety", "planning", "risk"] },
+    { title: "Reciprocity", content: "Reveals how proactive positivity can influence outcomes in our favor", section: "philosophy", tags: ["psychology", "influence"] },
+    { title: "Compounding", content: "Shows how small, consistent improvements lead to extraordinary results over time", section: "philosophy", tags: ["growth", "time", "investment"] },
+    { title: "Opportunity Cost", content: "Forces us to consider what we're giving up when we make any choice", section: "philosophy", tags: ["economics", "decision"] },
+    { title: "Inversion", content: "Invert, always invert - solve problems by thinking backwards", section: "pillars", tags: ["problem-solving", "thinking"] },
+    { title: "Circle of Competence", content: "Understanding the boundaries of your knowledge and expertise", section: "pillars", tags: ["knowledge", "expertise", "limits"] },
+    // Psychological Tendencies
+    { title: "Reward and Punishment Superresponse", content: "The power of incentives in shaping behavior", section: "psychology", tags: ["incentives", "behavior"] },
+    { title: "Liking/Loving Tendency", content: "We ignore faults of and comply with wishes of those we like", section: "psychology", tags: ["bias", "emotions"] },
+    { title: "Disliking/Hating Tendency", content: "We ignore virtues in those we dislike", section: "psychology", tags: ["bias", "emotions"] },
+    { title: "Doubt-Avoidance Tendency", content: "The brain resolves doubt by making decisions quickly", section: "psychology", tags: ["decision-making", "uncertainty"] },
+    { title: "Inconsistency-Avoidance Tendency", content: "People are reluctant to change their minds", section: "psychology", tags: ["consistency", "change"] },
+    { title: "Curiosity Tendency", content: "Humans have an innate drive to learn and discover", section: "psychology", tags: ["learning", "discovery"] },
+    { title: "Kantian Fairness Tendency", content: "People expect fair treatment and reciprocate accordingly", section: "psychology", tags: ["fairness", "reciprocity"] },
+    { title: "Envy/Jealousy Tendency", content: "Comparison with others drives behavior", section: "psychology", tags: ["emotions", "comparison"] },
+    { title: "Reciprocation Tendency", content: "People feel obligated to return favors", section: "psychology", tags: ["social", "influence"] },
+    { title: "Influence-from-Mere-Association", content: "We associate things incorrectly due to past experiences", section: "psychology", tags: ["association", "bias"] },
+    { title: "Simple, Pain-Avoiding Psychological Denial", content: "People deny reality when it's too painful", section: "psychology", tags: ["denial", "psychology"] },
+    { title: "Excessive Self-Regard Tendency", content: "People overestimate their own abilities", section: "psychology", tags: ["ego", "overconfidence"] },
+    { title: "Overoptimism Tendency", content: "Excessive optimism about outcomes", section: "psychology", tags: ["optimism", "bias"] },
+    { title: "Deprival-Superreaction Tendency", content: "Loss aversion - losses hurt more than gains feel good", section: "psychology", tags: ["loss", "aversion"] },
+    { title: "Social-Proof Tendency", content: "People copy the actions of others", section: "psychology", tags: ["social", "conformity"] },
+    { title: "Contrast-Misreaction Tendency", content: "Judgments are affected by comparisons", section: "psychology", tags: ["comparison", "judgment"] },
+    { title: "Stress-Influence Tendency", content: "Stress affects decision-making ability", section: "psychology", tags: ["stress", "decisions"] },
+    { title: "Availability-Misweighing Tendency", content: "Overweighting easily recalled information", section: "psychology", tags: ["memory", "bias"] },
+    { title: "Use-It-or-Lose-It Tendency", content: "Skills decay without practice", section: "psychology", tags: ["practice", "skills"] },
+    { title: "Drug-Misinfluence Tendency", content: "Substances impair judgment", section: "psychology", tags: ["substances", "judgment"] },
+    { title: "Senescence-Misinfluence Tendency", content: "Aging affects cognitive function", section: "psychology", tags: ["aging", "cognition"] },
+    { title: "Authority-Misinfluence Tendency", content: "Overreliance on authority figures", section: "psychology", tags: ["authority", "influence"] },
+    { title: "Twaddle Tendency", content: "Tendency to speak nonsense", section: "psychology", tags: ["communication", "clarity"] },
+    { title: "Reason-Respecting Tendency", content: "People comply better when given reasons", section: "psychology", tags: ["reasoning", "compliance"] },
+    { title: "Lollapalooza Tendency", content: "Multiple tendencies acting together create extreme outcomes", section: "psychology", tags: ["synergy", "extreme"] }
+];
+
+function performSearch() {
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    const query = searchInput.value.toLowerCase().trim();
+    
+    if (query.length < 2) {
+        searchResults.classList.remove('active');
+        return;
+    }
+    
+    const results = searchData.filter(item => {
+        return item.title.toLowerCase().includes(query) || 
+               item.content.toLowerCase().includes(query) ||
+               item.tags.some(tag => tag.toLowerCase().includes(query));
+    });
+    
+    displaySearchResults(results, query);
+}
+
+function displaySearchResults(results, query) {
+    const searchResults = document.getElementById('search-results');
+    const lang = currentLanguage || 'en';
+    
+    if (results.length === 0) {
+        const noResultsText = lang === 'nl' ? 'Geen resultaten gevonden' : 'No results found';
+        searchResults.innerHTML = `<div class="search-no-results">${noResultsText}</div>`;
+    } else {
+        const resultsHtml = results.map(result => {
+            const highlightedTitle = highlightText(result.title, query);
+            const highlightedContent = highlightText(result.content, query);
+            
+            return `
+                <div class="search-result-item" onclick="navigateToSection('${result.section}')">
+                    <div class="search-result-title">${highlightedTitle}</div>
+                    <div class="search-result-excerpt">${highlightedContent}</div>
+                </div>
+            `;
+        }).join('');
+        
+        searchResults.innerHTML = resultsHtml;
+    }
+    
+    searchResults.classList.add('active');
+}
+
+function highlightText(text, query) {
+    const regex = new RegExp(`(${query})`, 'gi');
+    return text.replace(regex, '<span class="search-highlight">$1</span>');
+}
+
+function navigateToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        const offsetTop = section.offsetTop - 150; // Account for fixed nav and search
+        window.scrollTo({
+            top: offsetTop,
+            behavior: 'smooth'
+        });
+        
+        // Clear search
+        document.getElementById('search-input').value = '';
+        document.getElementById('search-results').classList.remove('active');
+    }
+}
+
+// Initialize search
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(performSearch, 300));
+        
+        // Update placeholder based on language
+        searchInput.addEventListener('focus', function() {
+            const lang = currentLanguage || 'en';
+            const placeholder = this.getAttribute(`data-${lang}-placeholder`);
+            if (placeholder) {
+                this.placeholder = placeholder;
+            }
+        });
+    }
+});
+
+// Register Service Worker for PWA
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/models/sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful:', registration.scope);
+                
+                // Check for updates periodically
+                setInterval(() => {
+                    registration.update();
+                }, 60000); // Check every minute
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed:', err);
+            });
+    });
+}
+
+// PWA install prompt
+let deferredPrompt;
+const installButton = document.createElement('button');
+installButton.className = 'install-button';
+installButton.innerHTML = '📱 Install App';
+installButton.style.display = 'none';
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show install button
+    installButton.style.display = 'block';
+    
+    // Add button to page
+    const navbar = document.querySelector('.nav-container');
+    if (navbar && !navbar.contains(installButton)) {
+        navbar.appendChild(installButton);
+    }
+});
+
+installButton.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to install prompt: ${outcome}`);
+        
+        if (outcome === 'accepted') {
+            installButton.style.display = 'none';
+        }
+        
+        deferredPrompt = null;
+    }
+});
+
+// Detect if app is installed
+window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed');
+    installButton.style.display = 'none';
+    
+    // Track installation
+    if (window.gtag) {
+        gtag('event', 'app_install', {
+            event_category: 'PWA',
+            event_label: 'Mental Models Framework'
+        });
+    }
+});
+
+// Check if running as PWA
+function isPWA() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone || 
+           document.referrer.includes('android-app://');
+}
+
+// Add PWA class to body if running as PWA
+if (isPWA()) {
+    document.body.classList.add('pwa-mode');
+}
+
+// Offline detection
+let offlineIndicator;
+
+function createOfflineIndicator() {
+    offlineIndicator = document.createElement('div');
+    offlineIndicator.className = 'offline-indicator';
+    offlineIndicator.innerHTML = currentLanguage === 'nl' ? '📡 Je bent offline' : '📡 You are offline';
+    document.body.appendChild(offlineIndicator);
+}
+
+function updateOnlineStatus() {
+    if (!offlineIndicator) {
+        createOfflineIndicator();
+    }
+    
+    if (!navigator.onLine) {
+        offlineIndicator.classList.add('show');
+        offlineIndicator.innerHTML = currentLanguage === 'nl' ? '📡 Je bent offline' : '📡 You are offline';
+    } else {
+        offlineIndicator.classList.remove('show');
+    }
+}
+
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+
+// Check initial status
+document.addEventListener('DOMContentLoaded', updateOnlineStatus);
