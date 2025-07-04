@@ -235,6 +235,13 @@ function switchLanguage(lang) {
         }
     });
     
+    // Update aria-labels
+    document.querySelectorAll('[data-en-label][data-nl-label]').forEach(element => {
+        if (element.hasAttribute(`data-${lang}-label`)) {
+            element.setAttribute('aria-label', element.getAttribute(`data-${lang}-label`));
+        }
+    });
+    
     // Update document language
     document.documentElement.lang = lang;
     
