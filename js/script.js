@@ -689,16 +689,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Simulate form submission (will be replaced with actual backend call)
             try {
-                // For now, just simulate a successful submission
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                showFormStatus('success', currentLanguage === 'nl' ? 
-                    'Bedankt voor je bericht! We nemen binnen 24 uur contact met je op.' : 
-                    'Thank you for your message! We\'ll get back to you within 24 hours.');
-                
-                // Reset form
-                contactForm.reset();
-                
+                const response = await fetch('contact.php', {
+                    method: 'POST',
+                    body: new FormData(contactForm)
+                });
+
+                const result = await response.text();
+
+                if (response.ok) {
+                    showFormStatus('success', result);
+                    contactForm.reset();
+                } else {
+                    showFormStatus('error', result);
+                }
+
                 // Track form submission in Google Analytics
                 if (window.gtag) {
                     gtag('event', 'contact_form_submit', {
