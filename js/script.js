@@ -16,6 +16,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
+            navMenu.classList.remove('active');
+        }
+    });
+
+    // Touch gestures for mobile
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    document.addEventListener('touchstart', function(e) {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+
+    document.addEventListener('touchend', function(e) {
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartY - touchEndY;
+        
+        // Swipe up to close mobile menu
+        if (diff > swipeThreshold && navMenu.classList.contains('active')) {
+            navMenu.classList.remove('active');
+        }
+    }
+
     // Smooth scrolling for navigation links
     navLinks.forEach(link => {
         link.addEventListener('click', function(e) {
@@ -515,6 +545,8 @@ function navigateToSection(sectionId) {
 // Initialize search
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
+    
     if (searchInput) {
         searchInput.addEventListener('input', debounce(performSearch, 300));
         
@@ -524,6 +556,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const placeholder = this.getAttribute(`data-${lang}-placeholder`);
             if (placeholder) {
                 this.placeholder = placeholder;
+            }
+        });
+
+        // Mobile-specific search improvements
+        searchInput.addEventListener('focus', function() {
+            // Scroll search into view on mobile
+            if (window.innerWidth <= 768) {
+                setTimeout(() => {
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            }
+        });
+
+        // Hide search results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (searchResults && !searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Hide search results on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && searchResults) {
+                searchResults.classList.remove('active');
+                searchInput.blur();
             }
         });
     }
